@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package link;
+
+service LinkService {
+  rpc createShortenUrl (createShortenUrlRequest) returns (createShortenUrlResponse);
+  rpc getOriginalUrl (getOriginalUrlRequest) returns (getOriginalUrlResponse);
+}
+
+message createShortenUrlRequest {
+  string url = 1;
+}
+
+message createShortenUrlResponse {
+  string shorten = 1;
+  string full = 2;
+}
+
+message getOriginalUrlRequest {
+  string shorten = 1;
+}
+
+message getOriginalUrlResponse {
+  string shorten = 1;
+  string full = 2;
+}
