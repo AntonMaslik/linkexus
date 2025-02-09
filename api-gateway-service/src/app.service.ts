@@ -34,9 +34,11 @@ export class AppService {
       this.linkService.createShortenUrl(createShortenUrlRequest),
     );
 
-    const redirectLink = `http://${this.configService.get<string>(
-      'API_GATEWAY_SERVICE',
-    )}/${link.shorten}`;
+    const redirectLink = `http://${
+      this.configService.get<string>('API_GATEWAY_HOST') +
+      ':' +
+      this.configService.get<string>('PORT')
+    }/${link.shorten}`;
 
     return redirectLink;
   }
