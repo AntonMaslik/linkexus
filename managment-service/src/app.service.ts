@@ -1,23 +1,21 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { Model } from 'mongoose';
 import { Link } from './repositories/links/links.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { ConfigService } from '@nestjs/config';
 import {
   createShortenUrlRequest,
   createShortenUrlResponse,
   getOriginalUrlRequest,
   getOriginalUrlResponse,
 } from './interface/link';
-import { ClientKafka } from '@nestjs/microservices';
+import { KafkaService } from './services/kafka.service';
 
 @Injectable()
 export class AppService {
   constructor(
     @InjectModel(Link.name) private linkModel: Model<Link>,
-    private configService: ConfigService,
-    @Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka,
+    private readonly kafkaService: KafkaService,
   ) {}
 
   async createShortenUrl(
@@ -30,9 +28,9 @@ export class AppService {
       full: createShortenUrlRequest.url,
     });
 
-    this.kafkaClient.emit('management-service', {
-      urlShort: shortCode,
-      urlFull: createShortenUrlRequest.url,
+    this.kafkaService.sendMessage('create-shorten-url', {
+      shorten: shortCode,
+      full: createShortenUrlRequest.url,
     });
 
     return {
@@ -52,9 +50,9 @@ export class AppService {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
 
-    this.kafkaClient.emit('management-service', {
-      urlShort: urlMapping.shorten,
-      urlFull: urlMapping.full,
+    this.kafkaService.sendMessage('get-shorten-code', {
+      shorten: urlMapping.shorten,
+      full: urlMapping.full,
     });
 
     return {

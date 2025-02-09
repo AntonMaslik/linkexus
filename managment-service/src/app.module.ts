@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Link, LinkSchema } from './repositories/links/links.schema';
 import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
+import { KafkaService } from './services/kafka.service';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService, ClientKafka],
+  providers: [AppService, ClientKafka, KafkaService],
   exports: [],
 })
 export class AppModule {}
