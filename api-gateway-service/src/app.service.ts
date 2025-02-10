@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ClientGrpc } from '@nestjs/microservices';
+import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import {
   getOriginalUrlRequest,
@@ -9,6 +9,7 @@ import {
 import { LinkService } from './interface/link';
 import { createShortenUrlRequest } from './interface/link';
 import { firstValueFrom } from 'rxjs';
+import { GrpcUnknownException } from 'nestjs-grpc-exceptions';
 
 @Injectable()
 export class AppService {
@@ -30,19 +31,21 @@ export class AppService {
   async createLink(
     createShortenUrlRequest: createShortenUrlRequest,
   ): Promise<string> {
-    const link = await firstValueFrom(
-      this.linkService.createShortenUrl(createShortenUrlRequest),
-    );
+    try {
+      const link = await firstValueFrom(
+        this.linkService.createShortenUrl(createShortenUrlRequest),
+      );
 
-    const redirectLink = `http://${
-      this.configService.getOrThrow<string>('API_GATEWAY_HOST') +
-      ':' +
-      this.configService.getOrThrow<string>('PORT')
-    }/${link.shorten}`;
+      const redirectLink = `http://${
+        this.configService.getOrThrow<string>('API_GATEWAY_HOST') +
+        ':' +
+        this.configService.getOrThrow<string>('PORT')
+      }/${link.shorten}`;
 
-    console.log(link);
-
-    return redirectLink;
+      return redirectLink;
+    } catch (error) {
+      return error;
+    }
   }
 
   async getLink(
