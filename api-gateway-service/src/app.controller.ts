@@ -21,7 +21,11 @@ export class AppController {
   async createLink(
     @Body() createShortenUrlRequest: createShortenUrlRequest,
   ): Promise<string> {
-    return this.appService.createLink(createShortenUrlRequest);
+    try {
+      return this.appService.createLink(createShortenUrlRequest);
+    } catch (error) {
+      return error;
+    }
   }
 
   @Get(':shortId')
@@ -30,10 +34,14 @@ export class AppController {
     @Param('shortId') shortId: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const getOriginalUrlResponse = await this.appService.getLink({
-      shorten: shortId,
-    });
+    try {
+      const getOriginalUrlResponse = await this.appService.getLink({
+        shorten: shortId,
+      });
 
-    return res.redirect(getOriginalUrlResponse.full);
+      return res.redirect(getOriginalUrlResponse.full);
+    } catch (error) {
+      return error;
+    }
   }
 }
