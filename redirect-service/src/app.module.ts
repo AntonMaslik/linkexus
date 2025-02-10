@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
+import { GrpcServerExceptionFilter } from 'nestjs-grpc-exceptions';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -25,6 +27,12 @@ import { join } from 'path';
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: GrpcServerExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

@@ -1,13 +1,23 @@
-import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response } from 'express';
 import { createShortenUrlRequest } from './interface/link';
+import { GrpcToHttpInterceptor } from 'nestjs-grpc-exceptions';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post()
+  @UseInterceptors(GrpcToHttpInterceptor)
   async createLink(
     @Body() createShortenUrlRequest: createShortenUrlRequest,
   ): Promise<string> {
@@ -15,6 +25,7 @@ export class AppController {
   }
 
   @Get(':shortId')
+  @UseInterceptors(GrpcToHttpInterceptor)
   async redirect(
     @Param('shortId') shortId: string,
     @Res({ passthrough: true }) res: Response,

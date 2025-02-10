@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+
 export interface getOriginalUrlRequest {
   shorten: string;
 }
@@ -8,7 +10,5 @@ export interface getOriginalUrlResponse {
 }
 
 export interface LinkService {
-  getOriginalUrl(data: {
-    shorten: string;
-  }): Promise<{ shorten: string; full: string }>;
+  getOriginalUrl(data: { shorten: string }): Observable<getOriginalUrlResponse>;
 }

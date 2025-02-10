@@ -30,6 +30,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "kafkajs": "^2.2.4",
     "mongoose": "^8.10.0",
+    "nestjs-grpc-exceptions": "^0.2.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

@@ -4,7 +4,13 @@ import {
   getOriginalUrlResponse,
   LinkService,
 } from './interface/link';
-import { ClientGrpc } from '@nestjs/microservices';
+import { ClientGrpc, RpcException } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+import {
+  GrpcAbortedException,
+  GrpcNotFoundException,
+  GrpcUnknownException,
+} from 'nestjs-grpc-exceptions';
 
 @Injectable()
 export class AppService {
@@ -19,10 +25,16 @@ export class AppService {
   async getOriginalUrl(
     getOriginalUrlRequest: getOriginalUrlRequest,
   ): Promise<getOriginalUrlResponse> {
-    const response = await this.linkService.getOriginalUrl({
-      shorten: getOriginalUrlRequest.shorten,
-    });
+    try {
+      const response = await firstValueFrom(
+        this.linkService.getOriginalUrl({
+          shorten: getOriginalUrlRequest.shorten,
+        }),
+      );
 
-    return response;
+      return response;
+    } catch (error) {
+      throw new GrpcUnknownException(error);
+    }
   }
 }

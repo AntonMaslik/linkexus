@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { Model } from 'mongoose';
 import { Link } from './repositories/links/links.schema';
@@ -9,6 +9,11 @@ import {
   getOriginalUrlRequest,
   getOriginalUrlResponse,
 } from './interface/link';
+import {
+  GrpcAbortedException,
+  GrpcInvalidArgumentException,
+  GrpcNotFoundException,
+} from 'nestjs-grpc-exceptions';
 
 @Injectable()
 export class AppService {
@@ -19,10 +24,20 @@ export class AppService {
   ): Promise<createShortenUrlResponse> {
     const shortCode = crypto.randomBytes(3).toString('hex');
 
-    await this.linkModel.create({
+    if (createShortenUrlRequest?.url === undefined) {
+      throw new GrpcInvalidArgumentException(
+        'Failed to create shorten url, check structure body arguments!',
+      );
+    }
+
+    const result = await this.linkModel.create({
       shorten: shortCode,
       full: createShortenUrlRequest.url,
     });
+
+    if (!result) {
+      throw new GrpcAbortedException('Failed to create shorten url');
+    }
 
     return {
       shorten: shortCode,
@@ -38,7 +53,7 @@ export class AppService {
     });
 
     if (!urlMapping) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      throw new GrpcNotFoundException('Shorten Not Found');
     }
 
     return {

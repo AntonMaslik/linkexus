@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Link, LinkSchema } from './repositories/links/links.schema';
+import { APP_FILTER } from '@nestjs/core';
+import { GrpcServerExceptionFilter } from 'nestjs-grpc-exceptions';
 
 @Module({
   imports: [
@@ -21,7 +23,13 @@ import { Link, LinkSchema } from './repositories/links/links.schema';
     MongooseModule.forFeature([{ name: Link.name, schema: LinkSchema }]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: GrpcServerExceptionFilter,
+    },
+  ],
   exports: [],
 })
 export class AppModule {}

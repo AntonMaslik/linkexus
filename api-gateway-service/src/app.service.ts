@@ -35,10 +35,12 @@ export class AppService {
     );
 
     const redirectLink = `http://${
-      this.configService.get<string>('API_GATEWAY_HOST') +
+      this.configService.getOrThrow<string>('API_GATEWAY_HOST') +
       ':' +
-      this.configService.get<string>('PORT')
+      this.configService.getOrThrow<string>('PORT')
     }/${link.shorten}`;
+
+    console.log(link);
 
     return redirectLink;
   }
