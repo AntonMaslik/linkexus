@@ -9,7 +9,9 @@ import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: join(__dirname, '..', '..', '.env'),
+    }),
     ClientsModule.registerAsync([
       {
         name: 'LINK_SERVICE',

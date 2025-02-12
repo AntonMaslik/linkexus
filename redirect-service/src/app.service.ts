@@ -4,13 +4,9 @@ import {
   getOriginalUrlResponse,
   LinkService,
 } from './interface/link';
-import { ClientGrpc, RpcException } from '@nestjs/microservices';
+import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import {
-  GrpcAbortedException,
-  GrpcNotFoundException,
-  GrpcUnknownException,
-} from 'nestjs-grpc-exceptions';
+import { GrpcUnknownException } from 'nestjs-grpc-exceptions';
 
 @Injectable()
 export class AppService {

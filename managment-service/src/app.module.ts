@@ -6,11 +6,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Link, LinkSchema } from './repositories/links/links.schema';
 import { APP_FILTER } from '@nestjs/core';
 import { GrpcServerExceptionFilter } from 'nestjs-grpc-exceptions';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      envFilePath: join(__dirname, '..', '..', '.env'),
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

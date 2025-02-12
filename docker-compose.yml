@@ -17,5 +17,38 @@ services:
       environment:
         ME_CONFIG_MONGODB_ADMINUSERNAME: root
         ME_CONFIG_MONGODB_ADMINPASSWORD: example
-        ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+        ME_CONFIG_MONGODB_URL: ${MONGODB_URI}
         ME_CONFIG_BASICAUTH: false
+
+    api_gateway:
+      build: ./api-gateway-service
+      restart: always
+      ports:
+        - 3000:3000
+      environment:
+        LINK_MICROSERVICE_URL: ${LINK_MICROSERVICE_URL}
+        SHORTEN_MICROSERVICE_URL: ${SHORTEN_MICROSERVICE_URL}
+        API_GATEWAY_HOST: ${API_GATEWAY_HOST}
+        PORT: ${PORT}
+
+    link_microservice:
+      build: ./managment-service
+      restart: always
+      ports:
+        - 5000:5000
+      depends_on:
+        - mongo
+      environment:
+        MONGODB_URI: ${MONGODB_URI}
+        MONGODB_DATABASE: ${MONGODB_DATABASE}
+        LINK_MICROSERVICE_URL: ${LINK_MICROSERVICE_URL}
+        SHORTEN_MICROSERVICE_URL: ${SHORTEN_MICROSERVICE_URL}
+
+    shorten_microservice:
+      build: ./redirect-service
+      restart: always
+      ports:
+        - 5001:5001
+      environment:
+        LINK_MICROSERVICE_URL: ${LINK_MICROSERVICE_URL}
+        SHORTEN_MICROSERVICE_URL: ${SHORTEN_MICROSERVICE_URL}
